@@ -4,7 +4,7 @@
 
 ## LibDriver FM24CLXX
 
-[English](/README.md) | [ 简体中文](/README_CH.md)
+[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
 
 FM24CLXX是赛普拉斯公司推出的IIC总线的铁电存储芯片。不像EEPROM，铁电存储芯片支持总线速度写入数据，无需等待，铁电拥有比EEPROM更低的写入功耗，铁电支持10^14读写次数，数据保存时间足有151年。
 
@@ -104,7 +104,7 @@ return 0;
 
 ### 版权
 
-版权(C) LibDriver 2015-2021 版权所有
+版权 (c) 2015 - 现在 LibDriver 版权所有
 
 MIT 许可证（MIT）
 

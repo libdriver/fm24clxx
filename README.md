@@ -4,7 +4,7 @@
 
 ## LibDriver FM24CLXX
 
-[English](/README.md) | [ 简体中文](/README_CN.md)
+[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
 
 FM24CLXX is a ferroelectric memory chip of IIC bus introduced by Cypress. Unlike EEPROM, ferroelectric storage chip supports bus speed writing data without waiting. Ferroelectric has lower write power than EEPROM. Ferroelectric supports 10^14 read and write times, and the data storage time is 151 years.
 
@@ -104,7 +104,7 @@ Please sent an e-mail to lishifenging@outlook.com
 
 ### License
 
-Copyright (C) LibDriver 2015-2021 All rights reserved 
+Copyright (c) 2015 - present LibDriver All rights reserved
 
 
 
