@@ -1,10 +1,12 @@
+[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
+
 <div align=center>
 <img src="/doc/image/logo.png"/>
 </div>
 
 ## LibDriver FM24CLXX
 
-[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
+[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/fm24clxx/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
 FM24CLXX是赛普拉斯公司推出的IIC总线的铁电存储芯片。不像EEPROM，铁电存储芯片支持总线速度写入数据，无需等待，铁电拥有比EEPROM更低的写入功耗，铁电支持10^14读写次数，数据保存时间足有151年。
 
