@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_FM24CLXX_READ_TEST_H_
-#define _DRIVER_FM24CLXX_READ_TEST_H_
+#ifndef DRIVER_FM24CLXX_READ_TEST_H
+#define DRIVER_FM24CLXX_READ_TEST_H
 
 #include "driver_fm24clxx_interface.h"
 

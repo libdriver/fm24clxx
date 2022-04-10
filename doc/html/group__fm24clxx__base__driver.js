@@ -1,7 +1,7 @@
 var group__fm24clxx__base__driver =
 [
     [ "fm24clxx_handle_s", "structfm24clxx__handle__s.html", [
-      [ "debug_print", "structfm24clxx__handle__s.html#a75f9f50c23e87e9407f9ec4e34bb42f2", null ],
+      [ "debug_print", "structfm24clxx__handle__s.html#a769d5b3a6c14790a0e126e8fe70b384b", null ],
       [ "delay_ms", "structfm24clxx__handle__s.html#a406c9433252b7366de417b7a60915c81", null ],
       [ "id", "structfm24clxx__handle__s.html#a4fc3a0c58dfbd1e68224521185cb9384", null ],
       [ "iic_addr", "structfm24clxx__handle__s.html#ae4fb63dc1b166464d5da3aa753b0805a", null ],

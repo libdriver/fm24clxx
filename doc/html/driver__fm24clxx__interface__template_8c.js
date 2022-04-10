@@ -1,6 +1,6 @@
 var driver__fm24clxx__interface__template_8c =
 [
-    [ "fm24clxx_interface_debug_print", "group__fm24clxx__interface__driver.html#ga12ea86e9ea8f069b334ad128de3f73f3", null ],
+    [ "fm24clxx_interface_debug_print", "group__fm24clxx__interface__driver.html#gaa9fe42bb9e2227c02a0be642b98a72c2", null ],
     [ "fm24clxx_interface_delay_ms", "group__fm24clxx__interface__driver.html#ga6e754c8b0081485601773261d25b7f01", null ],
     [ "fm24clxx_interface_iic_deinit", "group__fm24clxx__interface__driver.html#gac6d6fef67eaeec6f08ebaebe36c4c032", null ],
     [ "fm24clxx_interface_iic_init", "group__fm24clxx__interface__driver.html#gac2de7cb9b55ef3a2961a21efff0fad7f", null ],

@@ -49,7 +49,7 @@ static fm24clxx_handle_t gs_handle;        /**< fm24clxx handle */
  */
 uint8_t fm24clxx_basic_init(fm24clxx_t type, fm24clxx_address_t address)
 {
-    volatile uint8_t res;
+    uint8_t res;
     
     /* link interface function */
     DRIVER_FM24CLXX_LINK_INIT(&gs_handle, fm24clxx_handle_t);
@@ -64,7 +64,7 @@ uint8_t fm24clxx_basic_init(fm24clxx_t type, fm24clxx_address_t address)
     
     /* set chip type */
     res = fm24clxx_set_type(&gs_handle, type);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: set type failed.\n");
        
@@ -73,7 +73,7 @@ uint8_t fm24clxx_basic_init(fm24clxx_t type, fm24clxx_address_t address)
     
     /* set addr pin */
     res = fm24clxx_set_addr_pin(&gs_handle, address);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: set address pin failed.\n");
        
@@ -82,7 +82,7 @@ uint8_t fm24clxx_basic_init(fm24clxx_t type, fm24clxx_address_t address)
     
     /* fm24clxx init */
     res = fm24clxx_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: init failed.\n");
        
@@ -105,7 +105,7 @@ uint8_t fm24clxx_basic_init(fm24clxx_t type, fm24clxx_address_t address)
 uint8_t fm24clxx_basic_read(uint16_t address, uint8_t *buf, uint16_t len)
 {
     /* read data */
-    if (fm24clxx_read(&gs_handle, address, buf, len))
+    if (fm24clxx_read(&gs_handle, address, buf, len) != 0)
     {
         return 1;
     }
@@ -128,7 +128,7 @@ uint8_t fm24clxx_basic_read(uint16_t address, uint8_t *buf, uint16_t len)
 uint8_t fm24clxx_basic_write(uint16_t address, uint8_t *buf, uint16_t len)
 {
     /* read data */
-    if (fm24clxx_write(&gs_handle, address, buf, len))
+    if (fm24clxx_write(&gs_handle, address, buf, len) != 0)
     {
         return 1;
     }
@@ -148,7 +148,7 @@ uint8_t fm24clxx_basic_write(uint16_t address, uint8_t *buf, uint16_t len)
 uint8_t fm24clxx_basic_deinit(void)
 {
     /* fm24clxx deinit */
-    if (fm24clxx_deinit(&gs_handle))
+    if (fm24clxx_deinit(&gs_handle) != 0)
     {
         return 1;
     }

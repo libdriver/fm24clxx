@@ -50,10 +50,10 @@ static fm24clxx_handle_t gs_handle;        /**< fm24clxx handle */
  */
 uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
 {
-    volatile uint8_t res, i, j;
-    volatile uint8_t buf[12];
-    volatile uint8_t buf_check[12];
-    volatile uint16_t inc;
+    uint8_t res, i, j;
+    uint8_t buf[12];
+    uint8_t buf_check[12];
+    uint16_t inc;
     fm24clxx_info_t info;
     
     /* link interface function */
@@ -69,7 +69,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
     
     /* get information */
     res = fm24clxx_info(&info);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: get info failed.\n");
        
@@ -91,7 +91,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
     
     /* set chip type */
     res = fm24clxx_set_type(&gs_handle, type);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: set type failed.\n");
        
@@ -100,7 +100,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
     
     /* set iic addr pin */
     res = fm24clxx_set_addr_pin(&gs_handle, address);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: set address pin failed.\n");
        
@@ -109,7 +109,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
     
     /* fm24clxx init */
     res = fm24clxx_init(&gs_handle);
-    if (res)
+    if (res != 0)
     {
         fm24clxx_interface_debug_print("fm24clxx: init failed.\n");
        
@@ -118,30 +118,30 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
     
     /* start read test */
     fm24clxx_interface_debug_print("fm24clxx: start read test.\n");
-    inc = (type + 1) / 8;
-    for (i=0; i<8; i++)
+    inc = ((uint16_t)type + 1) / 8;
+    for (i = 0; i < 8; i++)
     {
-        for (j=0; j<12; j++)
+        for (j = 0; j < 12; j++)
         {
-            buf[j] = rand()%256;
+            buf[j] = (uint8_t)(rand() % 256);
         }
     
         /* write data */
         res = fm24clxx_write(&gs_handle, i*inc, (uint8_t *)buf, 12);
-        if (res)
+        if (res != 0)
         {
             fm24clxx_interface_debug_print("fm24clxx: write failed.\n");
-            fm24clxx_deinit(&gs_handle);
+            (void)fm24clxx_deinit(&gs_handle);
             
             return 1;
         }
 
         /* read data */
         res = fm24clxx_read(&gs_handle, i*inc, (uint8_t *)buf_check, 12);
-        if (res)
+        if (res != 0)
         {
             fm24clxx_interface_debug_print("fm24clxx: read failed.\n");
-            fm24clxx_deinit(&gs_handle);
+            (void)fm24clxx_deinit(&gs_handle);
             
             return 1;
         }
@@ -151,7 +151,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
             if (buf[j] != buf_check[j])
             {
                 fm24clxx_interface_debug_print("fm24clxx: check error.\n");
-                fm24clxx_deinit(&gs_handle);
+                (void)fm24clxx_deinit(&gs_handle);
                 
                 return 1;
             }
@@ -161,7 +161,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
 
     /* finish read test */
     fm24clxx_interface_debug_print("fm24clxx: finish read test.\n");
-    fm24clxx_deinit(&gs_handle);
+    (void)fm24clxx_deinit(&gs_handle);
     
     return 0;
 }

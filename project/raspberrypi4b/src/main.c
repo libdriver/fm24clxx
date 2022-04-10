@@ -36,7 +36,7 @@
 
 #include "driver_fm24clxx_read_test.h"
 #include "driver_fm24clxx_basic.h"
-#include "iic.h"
+#include <stdlib.h>
 
 /**
  * @brief     fm24clxx full function
@@ -92,11 +92,11 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
             fm24clxx_interface_debug_print("fm24clxx -h\n\tshow fm24clxx help.\n");
             fm24clxx_interface_debug_print("fm24clxx -p\n\tshow fm24clxx pin connections of the current board.\n");
             fm24clxx_interface_debug_print("fm24clxx -t read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)\n\t"
-                                          "run fm24clxx read test.\n");
+                                           "run fm24clxx read test.\n");
             fm24clxx_interface_debug_print("fm24clxx -c read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr>\n\t"
-                                          "run fm24clxx read function.\n");
+                                           "run fm24clxx read function.\n");
             fm24clxx_interface_debug_print("fm24clxx -c write -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr> <data>\n\t"
-                                          "run fm24clxx write function.data is hexadecimal.\n");
+                                           "run fm24clxx write function.data is hexadecimal.\n");
             
             return 0;
         }
@@ -151,7 +151,7 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                 address = (fm24clxx_address_t)atoi(argv[6]);
                 
                 /* run read test */
-                if (fm24clxx_read_test(type, address))
+                if (fm24clxx_read_test(type, address) != 0)
                 {
                     return 1;
                 }
@@ -182,9 +182,9 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
             /* read function */
             if (strcmp("read", argv[2]) == 0)
             {
-                volatile uint8_t res;
-                volatile uint8_t data;
-                volatile uint16_t reg_address;
+                uint8_t res;
+                uint8_t data;
+                uint16_t reg_address;
                 fm24clxx_t type;
                 fm24clxx_address_t address;
                 
@@ -261,14 +261,14 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                     reg_address += (argv[7][3] - 'A' + 10);
                 }
                 res = fm24clxx_basic_init(type, address);
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
                 res = fm24clxx_basic_read(reg_address, (uint8_t *)&data, 1);
-                if (res)
+                if (res != 0)
                 {
-                    fm24clxx_basic_deinit();
+                    (void)fm24clxx_basic_deinit();
                     
                     return 1;
                 }
@@ -276,7 +276,7 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                 {
                     fm24clxx_interface_debug_print("fm24clxx: read 0x%04x is 0x%02X.\n", reg_address, data);
                 }
-                fm24clxx_basic_deinit();
+                (void)fm24clxx_basic_deinit();
                 
                 return 0;
             }
@@ -302,9 +302,9 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
             /* write function */
             if (strcmp("write", argv[2]) == 0)
             {
-                volatile uint8_t res;
-                volatile uint8_t data;
-                volatile uint16_t reg_address;
+                uint8_t res;
+                uint8_t data;
+                uint16_t reg_address;
                 fm24clxx_t type;
                 fm24clxx_address_t address;
                 
@@ -398,14 +398,14 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                     data += (argv[8][1] - 'A' + 10);
                 }
                 res = fm24clxx_basic_init(type, address);
-                if (res)
+                if (res != 0)
                 {
                     return 1;
                 }
                 res = fm24clxx_basic_write(reg_address, (uint8_t *)&data, 1);
-                if (res)
+                if (res != 0)
                 {
-                    fm24clxx_basic_deinit();
+                    (void)fm24clxx_basic_deinit();
                     
                     return 1;
                 }
@@ -413,7 +413,7 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                 {
                     fm24clxx_interface_debug_print("fm24clxx: write 0x%04x is 0x%02X.\n", reg_address, data);
                 }
-                fm24clxx_basic_deinit();
+                (void)fm24clxx_basic_deinit();
                 
                 return 0;
             }
