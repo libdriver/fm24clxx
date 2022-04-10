@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_FM24CLXX_INTERFACE_H_
-#define _DRIVER_FM24CLXX_INTERFACE_H_
+#ifndef DRIVER_FM24CLXX_INTERFACE_H
+#define DRIVER_FM24CLXX_INTERFACE_H
 
 #include "driver_fm24clxx.h"
 
@@ -130,10 +130,9 @@ void fm24clxx_interface_delay_ms(uint32_t ms);
 /**
  * @brief     interface print format data
  * @param[in] fmt is the format data
- * @return    length of the send data
  * @note      none
  */
-uint16_t fm24clxx_interface_debug_print(char *fmt, ...);
+void fm24clxx_interface_debug_print(const char *const fmt, ...);
 
 /**
  * @}

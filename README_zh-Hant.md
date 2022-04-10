@@ -1,4 +1,4 @@
-[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md)
+[English](/README.md) | [ 简体中文](/README_zh-Hans.md) | [繁體中文](/README_zh-Hant.md) | [日本語](/README_ja.md) | [Deutsch](/README_de.md) | [한국어](/README_ko.md)
 
 <div align=center>
 <img src="/doc/image/logo.png"/>
@@ -6,11 +6,11 @@
 
 ## LibDriver FM24CLXX
 
-[![API](https://img.shields.io/badge/api-reference-blue)](https://www.libdriver.com/docs/fm24clxx/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
+[![MISRA](https://img.shields.io/badge/misra-compliant-brightgreen.svg)](/misra/README.md) [![API](https://img.shields.io/badge/api-reference-blue.svg)](https://www.libdriver.com/docs/fm24clxx/index.html) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](/LICENSE)
 
 FM24CLXX是賽普拉斯公司推出的IIC總線的鐵電存儲芯片。不像EEPROM，鐵電存儲芯片支持總線速度寫入數據，無需等待，鐵電擁有比EEPROM更低的寫入功耗，鐵電支持10^14讀寫次數，數據保存時間足有151年。
 
-LibDriver FM24CLXX是LibDriver推出的FM24CLXX的全功能驅動，該驅動提供寫入和讀取功能。
+LibDriver FM24CLXX是LibDriver推出的FM24CLXX的全功能驅動，該驅動提供寫入和讀取功能並且它符合MISRA標準。
 
 ### 目錄
 

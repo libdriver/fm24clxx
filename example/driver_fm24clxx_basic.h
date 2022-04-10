@@ -34,8 +34,8 @@
  * </table>
  */
 
-#ifndef _DRIVER_FM24CLXX_BASIC_H_
-#define _DRIVER_FM24CLXX_BASIC_H_
+#ifndef DRIVER_FM24CLXX_BASIC_H
+#define DRIVER_FM24CLXX_BASIC_H
 
 #include "driver_fm24clxx_interface.h"
 
