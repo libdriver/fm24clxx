@@ -53,7 +53,7 @@ uint8_t res;
 uint8_t data;
 
 res = fm24clxx_basic_init(FM24CL16B, FM24CLXX_ADDRESS_A000);
-if (res)
+if (res != 0)
 {
     return 1;
 }
@@ -61,9 +61,9 @@ if (res)
 ...
 
 res = fm24clxx_basic_read(0x00, (uint8_t *)&data, 1);
-if (res)
+if (res != 0)
 {
-    fm24clxx_basic_deinit();
+    (void)fm24clxx_basic_deinit();
 
     return 1;
 }
@@ -75,9 +75,9 @@ else
 ...
 
 res = fm24clxx_basic_write(0x00, (uint8_t *)&data, 1);
-if (res)
+if (res != 0)
 {
-    fm24clxx_basic_deinit();
+    (void)fm24clxx_basic_deinit();
 
     return 1;
 }
@@ -88,7 +88,7 @@ else
 
 ...
 
-fm24clxx_basic_deinit();
+(void)fm24clxx_basic_deinit();
 
 return 0;
 ```
