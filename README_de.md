@@ -26,15 +26,15 @@ LibDriver FM24CLXX ist der voll funktionsfähige Treiber von FM24CLXX, der von L
 
 /src enthält LibDriver FM24CLXX-Quelldateien.
 
-/interface enthält die plattformunabhängige Vorlage LibDriver FM24CLXX IIC。
+/interface enthält die plattformunabhängige Vorlage LibDriver FM24CLXX IIC.
 
-/test enthält den Testcode des LibDriver FM24CLXX-Treibers und dieser Code kann die erforderliche Funktion des Chips einfach testen。
+/test enthält den Testcode des LibDriver FM24CLXX-Treibers und dieser Code kann die erforderliche Funktion des Chips einfach testen.
 
 /example enthält LibDriver FM24CLXX-Beispielcode.
 
 /doc enthält das LibDriver FM24CLXX-Offlinedokument.
 
-/Datenblatt enthält FM24CLXX-Datenblatt。
+/Datenblatt enthält FM24CLXX-Datenblatt.
 
 /project enthält den allgemeinen Beispielcode für Linux- und MCU-Entwicklungsboards. Alle Projekte verwenden das Shell-Skript, um den Treiber zu debuggen, und die detaillierten Anweisungen finden Sie in der README.md jedes Projekts.
 
