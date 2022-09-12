@@ -50,6 +50,8 @@ LibDriver FM24CLXXは、LibDriverによって起動されたFM24CLXXの全機能
 #### example basic
 
 ```C
+#include "driver_fm24clxx_basic.h"
+
 uint8_t res;
 uint8_t data;
 
