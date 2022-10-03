@@ -50,6 +50,8 @@ LibDriver FM24CLXX是LibDriver推出的FM24CLXX的全功能驅動，該驅動提
 #### example basic
 
 ```C
+#include "driver_fm24clxx_basic.h"
+
 uint8_t res;
 uint8_t data;
 

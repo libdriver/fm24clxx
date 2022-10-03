@@ -27,15 +27,15 @@ LibDriver FM24CLXX is the full function driver of FM24CLXX launched by LibDriver
 
 /src includes LibDriver FM24CLXX source files.
 
-/interface includes LibDriver FM24CLXX IIC platform independent template。
+/interface includes LibDriver FM24CLXX IIC platform independent template.
 
-/test includes LibDriver FM24CLXX driver test code and this code can test the chip necessary function simply。
+/test includes LibDriver FM24CLXX driver test code and this code can test the chip necessary function simply.
 
 /example includes LibDriver FM24CLXX sample code.
 
 /doc includes LibDriver FM24CLXX offline document.
 
-/datasheet includes FM24CLXX datasheet。
+/datasheet includes FM24CLXX datasheet.
 
 /project includes the common Linux and MCU development board sample code. All projects use the shell script to debug the driver and the detail instruction can be found in each project's README.md.
 
@@ -50,6 +50,8 @@ Add /src, /interface and /example to your project.
 #### example basic
 
 ```C
+#include "driver_fm24clxx_basic.h"
+
 uint8_t res;
 uint8_t data;
 
