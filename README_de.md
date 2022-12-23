@@ -97,13 +97,13 @@ return 0;
 
 ### Dokument
 
-Online-Dokumente: https://www.libdriver.com/docs/fm24clxx/index.html
+Online-Dokumente: [https://www.libdriver.com/docs/fm24clxx/index.html](https://www.libdriver.com/docs/fm24clxx/index.html).
 
-Offline-Dokumente: /doc/html/index.html
+Offline-Dokumente: /doc/html/index.html.
 
 ### Beitrag
 
-Bitte senden Sie eine E-Mail an lishifenging@outlook.com
+Bitte beachten Sie CONTRIBUTING.md.
 
 ### Lizenz
 
@@ -151,4 +151,4 @@ SOFTWARE.
 
 ### Kontaktieren Sie uns
 
-Bitte senden Sie eine E-Mail an lishifenging@outlook.com
+Bitte senden Sie eine E-Mail an lishifenging@outlook.com.

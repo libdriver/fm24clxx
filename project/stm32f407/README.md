@@ -2,47 +2,79 @@
 
 #### 1.1 Chip Info
 
-chip name : STM32F407ZGT6.
+Chip Name: STM32F407ZGT6.
 
-extern oscillator : 8MHz.
+Extern Oscillator: 8MHz.
 
-uart pin: TX/RX PA9/PA10.
+UART Pin: TX/RX PA9/PA10.
 
-iic pin: SCL/SDA PB8/PB9.
+IIC Pin: SCL/SDA PB8/PB9.
 
-### 2. Shell
+### 2. Development and Debugging
 
-#### 2.1 Shell Parameter
+#### 2.1 Integrated Development Environment
 
-baud rate: 115200.
+LidDriver provides both Keil and IAR integrated development environment projects.
 
-data bits : 8.
+MDK is the Keil ARM project and your Keil version must be 5 or higher.Keil ARM project needs STMicroelectronics STM32F4 Series Device Family Pack and you can download from https://www.keil.com/dd2/stmicroelectronics/stm32f407zgtx.
 
-stop bits: 1.
+EW is the IAR ARM project and your IAR version must be 9 or higher.
 
-parity: none.
+#### 2.2 Serial Port Parameter
 
-flow control: none.
+Baud Rate: 115200.
+
+Data Bits : 8.
+
+Stop Bits: 1.
+
+Parity: None.
+
+Flow Control: None.
+
+#### 2.3 Serial Port Assistant
+
+We use '\n' to wrap lines.If your serial port assistant displays exceptions (e.g. the displayed content does not divide lines), please modify the configuration of your serial port assistant or replace one that supports '\n' parsing.
 
 ### 3. FM24CLXX
 
 #### 3.1 Command Instruction
 
-​          fm24clxx is a basic command which can test all fm24clxx driver function:
+1. Show fm24clxx chip and driver information.
 
-​           -i          show fm24clxx chip and driver information.
+   ```shell
+   fm24clxx (-i | --information)
+   ```
 
-​           -h         show fm24clxx help.
+2. Show fm24clxx help.
 
-​           -p         show fm24clxx pin connections of the current board.
+   ```shell
+   fm24clxx (-h | --help)
+   ```
 
-​           -t  read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)         run fm24clxx read test.
+3. Show fm24clxx pin connections of the current board.
 
-​           -c (read -type (4 | 16 | 64)  -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)  <registeraddr>| write  -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)  <registeraddr> <data>)
+   ```shell
+   fm24clxx (-p | --port)
+   ```
 
-​           -c read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)  <registeraddr>        run fm24clxx read function.
+4. Run fm24clxx read test.
 
-​           -c write -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)  <registeraddr> <data>        run fm24clxx write function.data is hexadecimal.
+   ```shell
+   fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+   ```
+
+5. Run fm24clxx read function, addr is the read register address.
+
+   ```shell
+   fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--addr=<address>]
+   ```
+
+6. Run fm24clxx write function, addr is the write register address, data is the set data and it is hexadecimal.
+
+   ```shell
+   fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--addr=<address>] [--data=<hex>]
+   ```
 
 #### 3.2 Command Example
 
@@ -68,7 +100,7 @@ fm24clxx: SDA connected to GPIOB PIN9.
 ```
 
 ```shell
-fm24clxx -t read -type 16 -a 0
+fm24clxx -t read --type=16 --addr-pin=0
 
 fm24clxx: chip is Cypress FM24CLXX.
 fm24clxx: manufacturer is Cypress.
@@ -92,13 +124,13 @@ fm24clxx: finish read test.
 ```
 
 ```shell
-fm24clxx -c read -type 16 -a 0 0001
+fm24clxx -e read --type=16 --addr-pin=0 --addr=1
 
 fm24clxx: read 0x0001 is 0x11.
 ```
 
 ```shell
-fm24clxx -c write -type 16 -a 0 0001 11 
+fm24clxx -e write --type=16 --addr-pin=0 --addr=1 --data=11
 
 fm24clxx: write 0x0001 is 0x11.
 ```
@@ -106,17 +138,27 @@ fm24clxx: write 0x0001 is 0x11.
 ```shell
 fm24clxx -h
 
-fm24clxx -i
-	show fm24clxx chip and driver information.
-fm24clxx -h
-	show fm24clxx help.
-fm24clxx -p
-	show fm24clxx pin connections of the current board.
-fm24clxx -t read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)
-	run fm24clxx read test.
-fm24clxx -c read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr>
-	run fm24clxx read function.
-fm24clxx -c write -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr> <data>
-	run fm24clxx write function.data is hexadecimal.
+Usage:
+  fm24clxx (-i | --information)
+  fm24clxx (-h | --help)
+  fm24clxx (-p | --port)
+  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+           [--addr=<address>]
+  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+           [--addr=<address>] [--data=<hex>]
+
+Options:
+     --addr=<address>             Set the register address.([default: 0])
+     --addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>
+                                  Set the chip address pin.([default: 0])
+     --data=<hex>                 Set the write data and it is hexadecimal.([default: random])
+  -e <read | write>, --example=<read | write>
+                                  Run the driver example.
+  -h, --help                      Show the help.
+  -i, --information               Show the chip information.
+  -p, --port                      Display the pin connections of the current board.
+  -t <read>, --test=<read>        Run the driver test.
+      --type=<4 | 16 | 64>        Set the chip type.([default: 16])
 ```
 
