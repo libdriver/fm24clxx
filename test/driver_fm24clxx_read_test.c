@@ -81,7 +81,7 @@ uint8_t fm24clxx_read_test(fm24clxx_t type, fm24clxx_address_t address)
         fm24clxx_interface_debug_print("fm24clxx: chip is %s.\n", info.chip_name);
         fm24clxx_interface_debug_print("fm24clxx: manufacturer is %s.\n", info.manufacturer_name);
         fm24clxx_interface_debug_print("fm24clxx: interface is %s.\n", info.interface);
-        fm24clxx_interface_debug_print("fm24clxx: driver version is %d.%d.\n", info.driver_version/1000, (info.driver_version%1000)/100);
+        fm24clxx_interface_debug_print("fm24clxx: driver version is %d.%d.\n", info.driver_version / 1000, (info.driver_version % 1000) / 100);
         fm24clxx_interface_debug_print("fm24clxx: min supply voltage is %0.1fV.\n", info.supply_voltage_min_v);
         fm24clxx_interface_debug_print("fm24clxx: max supply voltage is %0.1fV.\n", info.supply_voltage_max_v);
         fm24clxx_interface_debug_print("fm24clxx: max current is %0.2fmA.\n", info.max_current_ma);

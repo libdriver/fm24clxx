@@ -36,6 +36,7 @@
 
 #include "driver_fm24clxx_read_test.h"
 #include "driver_fm24clxx_basic.h"
+#include <getopt.h>
 #include <stdlib.h>
 
 /**
@@ -50,389 +51,334 @@
  */
 uint8_t fm24clxx(uint8_t argc, char **argv)
 {
+    int c;
+    int longindex = 0;
+    const char short_options[] = "hipe:t:";
+    const struct option long_options[] =
+    {
+        {"help", no_argument, NULL, 'h'},
+        {"information", no_argument, NULL, 'i'},
+        {"port", no_argument, NULL, 'p'},
+        {"example", required_argument, NULL, 'e'},
+        {"test", required_argument, NULL, 't'},
+        {"addr", required_argument, NULL, 1},
+        {"addr-pin", required_argument, NULL, 2},
+        {"data", required_argument, NULL, 3},
+        {"type", required_argument, NULL, 4},
+        {NULL, 0, NULL, 0},
+    };
+    char type[32] = "unknow";
+    uint16_t addr = 0x0000;
+    uint8_t data = rand() % 0xFF;
+    fm24clxx_address_t addr_pin = FM24CLXX_ADDRESS_A000;
+    fm24clxx_t chip_type = FM24CL16B;
+    
+    /* if no params */
     if (argc == 1)
     {
+        /* goto the help */
         goto help;
     }
-    if (argc == 2)
-    {
-        if (strcmp("-i", argv[1]) == 0)
-        {
-            fm24clxx_info_t info;
-            
-            /* print fm24clxx info */
-            fm24clxx_info(&info);
-            fm24clxx_interface_debug_print("fm24clxx: chip is %s.\n", info.chip_name);
-            fm24clxx_interface_debug_print("fm24clxx: manufacturer is %s.\n", info.manufacturer_name);
-            fm24clxx_interface_debug_print("fm24clxx: interface is %s.\n", info.interface);
-            fm24clxx_interface_debug_print("fm24clxx: driver version is %d.%d.\n", info.driver_version / 1000, (info.driver_version % 1000) / 100);
-            fm24clxx_interface_debug_print("fm24clxx: min supply voltage is %0.1fV.\n", info.supply_voltage_min_v);
-            fm24clxx_interface_debug_print("fm24clxx: max supply voltage is %0.1fV.\n", info.supply_voltage_max_v);
-            fm24clxx_interface_debug_print("fm24clxx: max current is %0.2fmA.\n", info.max_current_ma);
-            fm24clxx_interface_debug_print("fm24clxx: max temperature is %0.1fC.\n", info.temperature_max);
-            fm24clxx_interface_debug_print("fm24clxx: min temperature is %0.1fC.\n", info.temperature_min);
-            
-            return 0;
-        }
-        else if (strcmp("-p", argv[1]) == 0)
-        {
-            /* print pin connection */
-            fm24clxx_interface_debug_print("fm24clxx: SCL connected to GPIO3(BCM).\n");
-            fm24clxx_interface_debug_print("fm24clxx: SDA connected to GPIO2(BCM).\n");
-            
-            return 0;
-        }
-        else if (strcmp("-h", argv[1]) == 0)
-        {
-            /* show fm24clxx help */
-            
-            help:
-            
-            fm24clxx_interface_debug_print("fm24clxx -i\n\tshow fm24clxx chip and driver information.\n");
-            fm24clxx_interface_debug_print("fm24clxx -h\n\tshow fm24clxx help.\n");
-            fm24clxx_interface_debug_print("fm24clxx -p\n\tshow fm24clxx pin connections of the current board.\n");
-            fm24clxx_interface_debug_print("fm24clxx -t read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7)\n\t"
-                                           "run fm24clxx read test.\n");
-            fm24clxx_interface_debug_print("fm24clxx -c read -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr>\n\t"
-                                           "run fm24clxx read function.\n");
-            fm24clxx_interface_debug_print("fm24clxx -c write -type (4 | 16 | 64) -a (0 | 1| 2 | 3 | 4 | 5 | 6 | 7) <registeraddr> <data>\n\t"
-                                           "run fm24clxx write function.data is hexadecimal.\n");
-            
-            return 0;
-        }
-        else
-        {
-            return 5;
-        }
-    }
-    else if (argc == 7)
-    {
-        /* run test */
-        if (strcmp("-t", argv[1]) == 0)
-        {
-             /* read test */
-            if (strcmp("read", argv[2]) == 0)
-            {
-                fm24clxx_t type;
-                fm24clxx_address_t address;
-                
-                if (strcmp("type", argv[3]) == 0)
-                {
-                    return 5;
-                }
-                if (strcmp("4", argv[4]) == 0)
-                {
-                    type = FM24CL04B;
-                }
-                else if (strcmp("16", argv[4]) == 0)
-                {
-                    type = FM24CL16B;
-                }
-                else if (strcmp("64", argv[4]) == 0)
-                {
-                    type = FM24CL64B;
-                }
-                else
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: type is invalid.\n");
-                    
-                    return 5;
-                }
-                if (strcmp("a", argv[5]) == 0)
-                {
-                    return 5;
-                }
-                if ((argv[6][0]<'0') || argv[6][0]>'7')
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: iic address is invalid.\n");
-                    
-                    return 5;
-                }
-                address = (fm24clxx_address_t)atoi(argv[6]);
-                
-                /* run read test */
-                if (fm24clxx_read_test(type, address) != 0)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
-        }
-        
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
-    }
-    else if (argc == 8)
-    {
-        /* run function */
-        if (strcmp("-c", argv[1]) == 0)
-        {
-            /* read function */
-            if (strcmp("read", argv[2]) == 0)
-            {
-                uint8_t res;
-                uint8_t data;
-                uint16_t reg_address;
-                fm24clxx_t type;
-                fm24clxx_address_t address;
-                
-                if (strcmp("type", argv[3]) == 0)
-                {
-                    return 5;
-                }
-                if (strcmp("4", argv[4]) == 0)
-                {
-                    type = FM24CL04B;
-                }
-                else if (strcmp("16", argv[4]) == 0)
-                {
-                    type = FM24CL16B;
-                }
-                else if (strcmp("64", argv[4]) == 0)
-                {
-                    type = FM24CL64B;
-                }
-                else
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: type is invalid.\n");
-                    
-                    return 5;
-                }
-                if (strcmp("a", argv[5]) == 0)
-                {
-                    return 5;
-                }
-                if ((argv[6][0]<'0') || argv[6][0]>'7')
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: iic address is invalid.\n");
-                    
-                    return 5;
-                }
-                address = (fm24clxx_address_t)atoi(argv[6]);
-                if (strlen(argv[7]) < 4)
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: read address length must be 4.\n");
-                    
-                    return 5;
-                }
-                reg_address = 0;
-                if ((argv[7][0] <= '9') && (argv[7][0] >= '0'))
-                {
-                    reg_address = (argv[7][0] - '0') * 16 * 16 *16;
-                }
-                else
-                {
-                    reg_address = (argv[7][0] - 'A' + 10) * 16 * 16 *16;
-                }
-                if ((argv[7][1] <= '9') && (argv[7][1] >= '0'))
-                {
-                    reg_address += (argv[7][1] - '0') * 16 *16;
-                }
-                else
-                {
-                    reg_address += (argv[7][1] - 'A' + 10) * 16 * 16;
-                }
-                if ((argv[7][2] <= '9') && (argv[7][2] >= '0'))
-                {
-                    reg_address += (argv[7][2] - '0') * 16;
-                }
-                else
-                {
-                    reg_address += (argv[7][2] - 'A' + 10) * 16;
-                }
-                if ((argv[7][3] <= '9') && (argv[7][3] >= '0'))
-                {
-                    reg_address += (argv[7][3] - '0');
-                }
-                else
-                {
-                    reg_address += (argv[7][3] - 'A' + 10);
-                }
-                res = fm24clxx_basic_init(type, address);
-                if (res != 0)
-                {
-                    return 1;
-                }
-                res = fm24clxx_basic_read(reg_address, (uint8_t *)&data, 1);
-                if (res != 0)
-                {
-                    (void)fm24clxx_basic_deinit();
-                    
-                    return 1;
-                }
-                else
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: read 0x%04x is 0x%02X.\n", reg_address, data);
-                }
-                (void)fm24clxx_basic_deinit();
-                
-                return 0;
-            }
-            
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
-        }
-        
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
-    }
-    else if (argc == 9)
-    {
-        /* run function */
-        if (strcmp("-c", argv[1]) == 0)
-        {
-            /* write function */
-            if (strcmp("write", argv[2]) == 0)
-            {
-                uint8_t res;
-                uint8_t data;
-                uint16_t reg_address;
-                fm24clxx_t type;
-                fm24clxx_address_t address;
-                
-                if (strcmp("type", argv[3]) == 0)
-                {
-                    return 5;
-                }
-                if (strcmp("4", argv[4]) == 0)
-                {
-                    type = FM24CL04B;
-                }
-                else if (strcmp("16", argv[4]) == 0)
-                {
-                    type = FM24CL16B;
-                }
-                else if (strcmp("64", argv[4]) == 0)
-                {
-                    type = FM24CL64B;
-                }
-                else
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: type is invalid.\n");
-                    
-                    return 5;
-                }
-                if (strcmp("a", argv[5]) == 0)
-                {
-                    return 5;
-                }
-                if ((argv[6][0]<'0') || argv[6][0]>'7')
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: iic address is invalid.\n");
-                    
-                    return 5;
-                }
-                address = (fm24clxx_address_t)atoi(argv[6]);
-                if (strlen(argv[7]) < 4)
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: write address length must be 4.\n");
-                    
-                    return 5;
-                }
-                reg_address = 0;
-                if ((argv[7][0] <= '9') && (argv[7][0] >= '0'))
-                {
-                    reg_address = (argv[7][0] - '0') * 16 * 16 *16;
-                }
-                else
-                {
-                    reg_address = (argv[7][0] - 'A' + 10) * 16 * 16 *16;
-                }
-                if ((argv[7][1] <= '9') && (argv[7][1] >= '0'))
-                {
-                    reg_address += (argv[7][1] - '0') * 16 *16;
-                }
-                else
-                {
-                    reg_address += (argv[7][1] - 'A' + 10) * 16 * 16;
-                }
-                if ((argv[7][2] <= '9') && (argv[7][2] >= '0'))
-                {
-                    reg_address += (argv[7][2] - '0') * 16;
-                }
-                else
-                {
-                    reg_address += (argv[7][2] - 'A' + 10) * 16;
-                }
-                if ((argv[7][3] <= '9') && (argv[7][3] >= '0'))
-                {
-                    reg_address += (argv[7][3] - '0');
-                }
-                else
-                {
-                    reg_address += (argv[7][3] - 'A' + 10);
-                }
-                data = 0;
-                if ((argv[8][0] <= '9') && (argv[8][0] >= '0'))
-                {
-                    data += (argv[8][0] - '0') * 16;
-                }
-                else
-                {
-                    data += (argv[8][0] - 'A' + 10) * 16;
-                }
-                if ((argv[8][1] <= '9') && (argv[8][1] >= '0'))
-                {
-                    data += (argv[8][1] - '0');
-                }
-                else
-                {
-                    data += (argv[8][1] - 'A' + 10);
-                }
-                res = fm24clxx_basic_init(type, address);
-                if (res != 0)
-                {
-                    return 1;
-                }
-                res = fm24clxx_basic_write(reg_address, (uint8_t *)&data, 1);
-                if (res != 0)
-                {
-                    (void)fm24clxx_basic_deinit();
-                    
-                    return 1;
-                }
-                else
-                {
-                    fm24clxx_interface_debug_print("fm24clxx: write 0x%04x is 0x%02X.\n", reg_address, data);
-                }
-                (void)fm24clxx_basic_deinit();
-                
-                return 0;
-            }
-            
-            /* param is invalid */
-            else
-            {
-                return 5;
-            }
-        }
-        
-        /* param is invalid */
-        else
-        {
-            return 5;
-        }
-    }
     
-    /* param is invalid */
+    /* init 0 */
+    optind = 0;
+    
+    /* parse */
+    do
+    {
+        /* parse the args */
+        c = getopt_long(argc, argv, short_options, long_options, &longindex);
+        
+        /* judge the result */
+        switch (c)
+        {
+            /* help */
+            case 'h' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "h");
+                
+                break;
+            }
+            
+            /* information */
+            case 'i' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "i");
+                
+                break;
+            }
+            
+            /* port */
+            case 'p' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "p");
+                
+                break;
+            }
+            
+            /* example */
+            case 'e' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "e_%s", optarg);
+                
+                break;
+            }
+            
+            /* test */
+            case 't' :
+            {
+                /* set the type */
+                memset(type, 0, sizeof(char) * 32);
+                snprintf(type, 32, "t_%s", optarg);
+                
+                break;
+            }
+            
+            /* addr */
+            case 1 :
+            {
+                /* set the reg addr */
+                addr = atol(optarg);
+                
+                break;
+            }
+            
+            /* addr pin */
+            case 2 :
+            {
+                /* set the addr pin */
+                if (strcmp("0", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A000;
+                }
+                else if (strcmp("1", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A001;
+                }
+                else if (strcmp("2", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A010;
+                }
+                else if (strcmp("3", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A011;
+                }
+                else if (strcmp("4", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A100;
+                }
+                else if (strcmp("5", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A101;
+                }
+                else if (strcmp("6", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A110;
+                }
+                else if (strcmp("7", optarg) == 0)
+                {
+                    addr_pin = FM24CLXX_ADDRESS_A111;
+                }
+                else
+                {
+                    return 5;
+                }
+                
+                break;
+            }
+            
+            /* data */
+            case 3 :
+            {
+                data = 0;
+                if ((optarg[0] <= '9') && (optarg[0] >= '0'))
+                {
+                    data += (optarg[0] - '0') * 16;
+                }
+                else
+                {
+                    data += (optarg[0] - 'A' + 10) * 16;
+                }
+                if ((optarg[1] <= '9') && (optarg[1] >= '0'))
+                {
+                    data += (optarg[1] - '0');
+                }
+                else
+                {
+                    data += (optarg[1] - 'A' + 10);
+                }
+                
+                break;
+            }
+             
+            /* type */
+            case 4 :
+            {
+                if (strcmp("4", optarg) == 0)
+                {
+                    chip_type = FM24CL04B;
+                }
+                else if (strcmp("16", optarg) == 0)
+                {
+                    chip_type = FM24CL16B;
+                }
+                else if (strcmp("64", optarg) == 0)
+                {
+                    chip_type = FM24CL64B;
+                }
+                else
+                {
+                    return 5;
+                }
+
+                break;
+            }
+            
+            /* the end */
+            case -1 :
+            {
+                break;
+            }
+            
+            /* others */
+            default :
+            {
+                return 5;
+            }
+        }
+    } while (c != -1);
+
+    /* run the function */
+    if (strcmp("t_read", type) == 0)
+    {
+        /* run read test */
+        if (fm24clxx_read_test(chip_type, addr_pin) != 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else if (strcmp("e_read", type) == 0)
+    {
+        uint8_t res;
+        
+        /* basic init */
+        res = fm24clxx_basic_init(chip_type, addr_pin);
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        /* read data */
+        res = fm24clxx_basic_read(addr, (uint8_t *)&data, 1);
+        if (res != 0)
+        {
+            (void)fm24clxx_basic_deinit();
+            
+            return 1;
+        }
+        
+        /* output */
+        fm24clxx_interface_debug_print("fm24clxx: read 0x%04x is 0x%02X.\n", addr, data);
+        
+        /* deinit */
+        (void)fm24clxx_basic_deinit();
+        
+        return 0;
+    }
+    else if (strcmp("e_write", type) == 0)
+    {
+        uint8_t res;
+        
+        /* basic init */
+        res = fm24clxx_basic_init(chip_type, addr_pin);
+        if (res != 0)
+        {
+            return 1;
+        }
+        
+        /* write data */
+        res = fm24clxx_basic_write(addr, (uint8_t *)&data, 1);
+        if (res != 0)
+        {
+            (void)fm24clxx_basic_deinit();
+            
+            return 1;
+        }
+        
+        /* output */
+        fm24clxx_interface_debug_print("fm24clxx: write 0x%04x is 0x%02X.\n", addr, data);
+        
+        /* deinit */
+        (void)fm24clxx_basic_deinit();
+        
+        return 0;
+    }
+    else if (strcmp("h", type) == 0)
+    {
+        help:
+        fm24clxx_interface_debug_print("Usage:\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-i | --information)\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-h | --help)\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-p | --port)\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--addr=<address>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--addr=<address>] [--data=<hex>]\n");
+        fm24clxx_interface_debug_print("\n");
+        fm24clxx_interface_debug_print("Options:\n");
+        fm24clxx_interface_debug_print("     --addr=<address>             Set the register address.([default: 0])\n");
+        fm24clxx_interface_debug_print("     --addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>\n");
+        fm24clxx_interface_debug_print("                                  Set the chip address pin.([default: 0])\n");
+        fm24clxx_interface_debug_print("     --data=<hex>                 Set the write data and it is hexadecimal.([default: random])\n");
+        fm24clxx_interface_debug_print("  -e <read | write>, --example=<read | write>\n");
+        fm24clxx_interface_debug_print("                                  Run the driver example.\n");
+        fm24clxx_interface_debug_print("  -h, --help                      Show the help.\n");
+        fm24clxx_interface_debug_print("  -i, --information               Show the chip information.\n");
+        fm24clxx_interface_debug_print("  -p, --port                      Display the pin connections of the current board.\n");
+        fm24clxx_interface_debug_print("  -t <read>, --test=<read>        Run the driver test.\n");
+        fm24clxx_interface_debug_print("      --type=<4 | 16 | 64>        Set the chip type.([default: 16])\n");
+        
+        return 0;
+    }
+    else if (strcmp("i", type) == 0)
+    {
+        fm24clxx_info_t info;
+        
+        /* print fm24clxx info */
+        fm24clxx_info(&info);
+        fm24clxx_interface_debug_print("fm24clxx: chip is %s.\n", info.chip_name);
+        fm24clxx_interface_debug_print("fm24clxx: manufacturer is %s.\n", info.manufacturer_name);
+        fm24clxx_interface_debug_print("fm24clxx: interface is %s.\n", info.interface);
+        fm24clxx_interface_debug_print("fm24clxx: driver version is %d.%d.\n", info.driver_version / 1000, (info.driver_version % 1000) / 100);
+        fm24clxx_interface_debug_print("fm24clxx: min supply voltage is %0.1fV.\n", info.supply_voltage_min_v);
+        fm24clxx_interface_debug_print("fm24clxx: max supply voltage is %0.1fV.\n", info.supply_voltage_max_v);
+        fm24clxx_interface_debug_print("fm24clxx: max current is %0.2fmA.\n", info.max_current_ma);
+        fm24clxx_interface_debug_print("fm24clxx: max temperature is %0.1fC.\n", info.temperature_max);
+        fm24clxx_interface_debug_print("fm24clxx: min temperature is %0.1fC.\n", info.temperature_min);
+        
+        return 0;
+    }
+    else if (strcmp("p", type) == 0)
+    {
+        /* print pin connection */
+        fm24clxx_interface_debug_print("fm24clxx: SCL connected to GPIO3(BCM).\n");
+        fm24clxx_interface_debug_print("fm24clxx: SDA connected to GPIO2(BCM).\n");
+        
+        return 0;
+    }
     else
     {
         return 5;

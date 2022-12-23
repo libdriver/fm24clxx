@@ -50,7 +50,7 @@
 
 /**
  * @brief     initialize the chip
- * @param[in] *handle points to a fm24clxx handle structure
+ * @param[in] *handle points to an fm24clxx handle structure
  * @return    status code
  *            - 0 success
  *            - 1 iic initialization failed
@@ -124,7 +124,7 @@ uint8_t fm24clxx_init(fm24clxx_handle_t *handle)
 
 /**
  * @brief     close the chip
- * @param[in] *handle points to a fm24clxx handle structure
+ * @param[in] *handle points to an fm24clxx handle structure
  * @return    status code
  *            - 0 success
  *            - 1 iic deinit failed
@@ -156,7 +156,7 @@ uint8_t fm24clxx_deinit(fm24clxx_handle_t *handle)
 
 /**
  * @brief     set the chip type
- * @param[in] *handle points to a fm24clxx handle structure
+ * @param[in] *handle points to an fm24clxx handle structure
  * @param[in] type is the chip type
  * @return    status code
  *            - 0 success
@@ -177,7 +177,7 @@ uint8_t fm24clxx_set_type(fm24clxx_handle_t *handle, fm24clxx_t type)
 
 /**
  * @brief      get the chip type
- * @param[in]  *handle points to a fm24clxx handle structure
+ * @param[in]  *handle points to an fm24clxx handle structure
  * @param[out] *type points to a chip type buffer
  * @return     status code
  *             - 0 success
@@ -198,7 +198,7 @@ uint8_t fm24clxx_get_type(fm24clxx_handle_t *handle, fm24clxx_t *type)
 
 /**
  * @brief     set the chip address pin
- * @param[in] *handle points to a fm24clxx handle structure
+ * @param[in] *handle points to an fm24clxx handle structure
  * @param[in] addr_pin is the chip address pin
  * @return    status code
  *            - 0 success
@@ -220,7 +220,7 @@ uint8_t fm24clxx_set_addr_pin(fm24clxx_handle_t *handle, fm24clxx_address_t addr
 
 /**
  * @brief      get the chip address pin
- * @param[in]  *handle points to a fm24clxx handle structure
+ * @param[in]  *handle points to an fm24clxx handle structure
  * @param[out] *addr_pin points to a chip address pin
  * @return     status code
  *             - 0 success
@@ -241,7 +241,7 @@ uint8_t fm24clxx_get_addr_pin(fm24clxx_handle_t *handle, fm24clxx_address_t *add
 
 /**
  * @brief      read bytes from the chip
- * @param[in]  *handle points to a fm24clxx handle structure
+ * @param[in]  *handle points to an fm24clxx handle structure
  * @param[in]  address is the register address
  * @param[out] *buf points to a data buffer
  * @param[in]  len is the buffer length
@@ -344,7 +344,7 @@ uint8_t fm24clxx_read(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf,
 
 /**
  * @brief     write bytes to the chip
- * @param[in] *handle points to a fm24clxx handle structure
+ * @param[in] *handle points to an fm24clxx handle structure
  * @param[in] address is the register address
  * @param[in] *buf points to a data buffer
  * @param[in] len is the buffer length
@@ -448,7 +448,7 @@ uint8_t fm24clxx_write(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf
 
 /**
  * @brief      get chip's information
- * @param[out] *info points to a fm24clxx info structure
+ * @param[out] *info points to an fm24clxx info structure
  * @return     status code
  *             - 0 success
  *             - 2 handle is NULL
