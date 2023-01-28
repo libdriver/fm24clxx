@@ -95,19 +95,19 @@ find_package(fm24clxx REQUIRED)
 4. Run fm24clxx read test.
 
    ```shell
-   fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+   fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
    ```
 
-5. Run fm24clxx read function, addr is the read register address.
+5. Run fm24clxx read function, address is the read register address and it is hexadecimal.
 
    ```shell
-   fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--addr=<address>]
+   fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--reg=<address>]
    ```
 
-6. Run fm24clxx write function, addr is the write register address, data is the set data and it is hexadecimal.
+6. Run fm24clxx write function, address is the write register address and it is hexadecimal, data is the set data and it is hexadecimal.
 
    ```shell
-   fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--addr=<address>] [--data=<hex>]
+   fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>] [--reg=<address>] [--data=<hex>]
    ```
 
 #### 3.2 Command Example
@@ -134,7 +134,7 @@ fm24clxx: SDA connected to GPIO2(BCM).
 ```
 
 ```shell
-./fm24clxx -t read --type=16 --addr-pin=0
+./fm24clxx -t read --type=16 --addr=0
 
 fm24clxx: chip is Cypress FM24CLXX.
 fm24clxx: manufacturer is Cypress.
@@ -158,13 +158,13 @@ fm24clxx: finish read test.
 ```
 
 ```shell
-./fm24clxx -e read --type=16 --addr-pin=0 --addr=1
+./fm24clxx -e read --type=16 --addr=0 --reg=1
 
 fm24clxx: read 0x0001 is 0x11.
 ```
 
 ```shell
-./fm24clxx -e write --type=16 --addr-pin=0 --addr=1 --data=11
+./fm24clxx -e write --type=16 --addr=0 --reg=1 --data=11
 
 fm24clxx: write 0x0001 is 0x11.
 ```
@@ -176,15 +176,14 @@ Usage:
   fm24clxx (-i | --information)
   fm24clxx (-h | --help)
   fm24clxx (-p | --port)
-  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
-  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
-           [--addr=<address>]
-  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
-           [--addr=<address>] [--data=<hex>]
+  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+           [--reg=<address>]
+  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]
+           [--reg=<address>] [--data=<hex>]
 
 Options:
-     --addr=<address>             Set the register address.([default: 0])
-     --addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>
+     --addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>
                                   Set the chip address pin.([default: 0])
      --data=<hex>                 Set the write data and it is hexadecimal.([default: random])
   -e <read | write>, --example=<read | write>
@@ -192,6 +191,7 @@ Options:
   -h, --help                      Show the help.
   -i, --information               Show the chip information.
   -p, --port                      Display the pin connections of the current board.
+      --reg=<address>             Set the register address and it is hexadecimal.([default: 0])
   -t <read>, --test=<read>        Run the driver test.
       --type=<4 | 16 | 64>        Set the chip type.([default: 16])
 ```

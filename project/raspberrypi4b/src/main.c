@@ -37,6 +37,7 @@
 #include "driver_fm24clxx_read_test.h"
 #include "driver_fm24clxx_basic.h"
 #include <getopt.h>
+#include <math.h>
 #include <stdlib.h>
 
 /**
@@ -44,9 +45,9 @@
  * @param[in] argc is arg numbers
  * @param[in] **argv is the arg address
  * @return    status code
- *             - 0 success
- *             - 1 run failed
- *             - 5 param is invalid
+ *            - 0 success
+ *            - 1 run failed
+ *            - 5 param is invalid
  * @note      none
  */
 uint8_t fm24clxx(uint8_t argc, char **argv)
@@ -62,33 +63,33 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         {"example", required_argument, NULL, 'e'},
         {"test", required_argument, NULL, 't'},
         {"addr", required_argument, NULL, 1},
-        {"addr-pin", required_argument, NULL, 2},
-        {"data", required_argument, NULL, 3},
+        {"data", required_argument, NULL, 2},
+        {"reg", required_argument, NULL, 3},
         {"type", required_argument, NULL, 4},
         {NULL, 0, NULL, 0},
     };
-    char type[32] = "unknow";
+    char type[33] = "unknow";
     uint16_t addr = 0x0000;
     uint8_t data = rand() % 0xFF;
     fm24clxx_address_t addr_pin = FM24CLXX_ADDRESS_A000;
     fm24clxx_t chip_type = FM24CL16B;
-    
+
     /* if no params */
     if (argc == 1)
     {
         /* goto the help */
         goto help;
     }
-    
+
     /* init 0 */
     optind = 0;
-    
+
     /* parse */
     do
     {
         /* parse the args */
         c = getopt_long(argc, argv, short_options, long_options, &longindex);
-        
+
         /* judge the result */
         switch (c)
         {
@@ -96,63 +97,54 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
             case 'h' :
             {
                 /* set the type */
-                memset(type, 0, sizeof(char) * 32);
+                memset(type, 0, sizeof(char) * 33);
                 snprintf(type, 32, "h");
-                
+
                 break;
             }
-            
+
             /* information */
             case 'i' :
             {
                 /* set the type */
-                memset(type, 0, sizeof(char) * 32);
+                memset(type, 0, sizeof(char) * 33);
                 snprintf(type, 32, "i");
-                
+
                 break;
             }
-            
+
             /* port */
             case 'p' :
             {
                 /* set the type */
-                memset(type, 0, sizeof(char) * 32);
+                memset(type, 0, sizeof(char) * 33);
                 snprintf(type, 32, "p");
-                
+
                 break;
             }
-            
+
             /* example */
             case 'e' :
             {
                 /* set the type */
-                memset(type, 0, sizeof(char) * 32);
+                memset(type, 0, sizeof(char) * 33);
                 snprintf(type, 32, "e_%s", optarg);
-                
+
                 break;
             }
-            
+
             /* test */
             case 't' :
             {
                 /* set the type */
-                memset(type, 0, sizeof(char) * 32);
+                memset(type, 0, sizeof(char) * 33);
                 snprintf(type, 32, "t_%s", optarg);
-                
+
                 break;
             }
-            
-            /* addr */
-            case 1 :
-            {
-                /* set the reg addr */
-                addr = atol(optarg);
-                
-                break;
-            }
-            
+
             /* addr pin */
-            case 2 :
+            case 1 :
             {
                 /* set the addr pin */
                 if (strcmp("0", optarg) == 0)
@@ -191,34 +183,138 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                 {
                     return 5;
                 }
+
+                break;
+            }
+
+            /* data */
+            case 2 :
+            {
+                char *p;
+                uint16_t l;
+                uint16_t i;
+                uint64_t hex_data;
+
+                /* set the data */
+                l = strlen(optarg);
+
+                /* check the header */
+                if (l >= 2)
+                {
+                    if (strncmp(optarg, "0x", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else if (strncmp(optarg, "0X", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else
+                    {
+                        p = optarg;
+                    }
+                }
+                else
+                {
+                    p = optarg;
+                }
                 
+                /* init 0 */
+                hex_data = 0;
+
+                /* loop */
+                for (i = 0; i < l; i++)
+                {
+                    if ((p[i] <= '9') && (p[i] >= '0'))
+                    {
+                        hex_data += (p[i] - '0') * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'F') && (p[i] >= 'A'))
+                    {
+                        hex_data += ((p[i] - 'A') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'f') && (p[i] >= 'a'))
+                    {
+                        hex_data += ((p[i] - 'a') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else
+                    {
+                        return 5;
+                    }
+                }
+                
+                /* set the data */
+                data = hex_data % 0xFF;
+
                 break;
             }
             
-            /* data */
+            /* addr */
             case 3 :
             {
-                data = 0;
-                if ((optarg[0] <= '9') && (optarg[0] >= '0'))
+                char *p;
+                uint16_t l;
+                uint16_t i;
+                uint64_t hex_data;
+
+                /* set the data */
+                l = strlen(optarg);
+
+                /* check the header */
+                if (l >= 2)
                 {
-                    data += (optarg[0] - '0') * 16;
+                    if (strncmp(optarg, "0x", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else if (strncmp(optarg, "0X", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else
+                    {
+                        p = optarg;
+                    }
                 }
                 else
                 {
-                    data += (optarg[0] - 'A' + 10) * 16;
-                }
-                if ((optarg[1] <= '9') && (optarg[1] >= '0'))
-                {
-                    data += (optarg[1] - '0');
-                }
-                else
-                {
-                    data += (optarg[1] - 'A' + 10);
+                    p = optarg;
                 }
                 
+                /* init 0 */
+                hex_data = 0;
+
+                /* loop */
+                for (i = 0; i < l; i++)
+                {
+                    if ((p[i] <= '9') && (p[i] >= '0'))
+                    {
+                        hex_data += (p[i] - '0') * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'F') && (p[i] >= 'A'))
+                    {
+                        hex_data += ((p[i] - 'A') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'f') && (p[i] >= 'a'))
+                    {
+                        hex_data += ((p[i] - 'a') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else
+                    {
+                        return 5;
+                    }
+                }
+                
+                /* set the addr */
+                addr = hex_data % 0xFFFF;
+
                 break;
             }
-             
+
             /* type */
             case 4 :
             {
@@ -241,13 +337,13 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
 
                 break;
             }
-            
+
             /* the end */
             case -1 :
             {
                 break;
             }
-            
+
             /* others */
             default :
             {
@@ -272,57 +368,57 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
     else if (strcmp("e_read", type) == 0)
     {
         uint8_t res;
-        
+
         /* basic init */
         res = fm24clxx_basic_init(chip_type, addr_pin);
         if (res != 0)
         {
             return 1;
         }
-        
+
         /* read data */
         res = fm24clxx_basic_read(addr, (uint8_t *)&data, 1);
         if (res != 0)
         {
             (void)fm24clxx_basic_deinit();
-            
+
             return 1;
         }
-        
+
         /* output */
         fm24clxx_interface_debug_print("fm24clxx: read 0x%04x is 0x%02X.\n", addr, data);
-        
+
         /* deinit */
         (void)fm24clxx_basic_deinit();
-        
+
         return 0;
     }
     else if (strcmp("e_write", type) == 0)
     {
         uint8_t res;
-        
+
         /* basic init */
         res = fm24clxx_basic_init(chip_type, addr_pin);
         if (res != 0)
         {
             return 1;
         }
-        
+
         /* write data */
         res = fm24clxx_basic_write(addr, (uint8_t *)&data, 1);
         if (res != 0)
         {
             (void)fm24clxx_basic_deinit();
-            
+
             return 1;
         }
-        
+
         /* output */
         fm24clxx_interface_debug_print("fm24clxx: write 0x%04x is 0x%02X.\n", addr, data);
-        
+
         /* deinit */
         (void)fm24clxx_basic_deinit();
-        
+
         return 0;
     }
     else if (strcmp("h", type) == 0)
@@ -332,31 +428,31 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         fm24clxx_interface_debug_print("  fm24clxx (-i | --information)\n");
         fm24clxx_interface_debug_print("  fm24clxx (-h | --help)\n");
         fm24clxx_interface_debug_print("  fm24clxx (-p | --port)\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("           [--addr=<address>]\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("           [--addr=<address>] [--data=<hex>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--reg=<address>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--reg=<address>] [--data=<hex>]\n");
         fm24clxx_interface_debug_print("\n");
         fm24clxx_interface_debug_print("Options:\n");
-        fm24clxx_interface_debug_print("     --addr=<address>             Set the register address.([default: 0])\n");
-        fm24clxx_interface_debug_print("     --addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>\n");
+        fm24clxx_interface_debug_print("      --addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>\n");
         fm24clxx_interface_debug_print("                                  Set the chip address pin.([default: 0])\n");
-        fm24clxx_interface_debug_print("     --data=<hex>                 Set the write data and it is hexadecimal.([default: random])\n");
+        fm24clxx_interface_debug_print("      --data=<hex>                Set the write data and it is hexadecimal.([default: random])\n");
         fm24clxx_interface_debug_print("  -e <read | write>, --example=<read | write>\n");
         fm24clxx_interface_debug_print("                                  Run the driver example.\n");
         fm24clxx_interface_debug_print("  -h, --help                      Show the help.\n");
         fm24clxx_interface_debug_print("  -i, --information               Show the chip information.\n");
         fm24clxx_interface_debug_print("  -p, --port                      Display the pin connections of the current board.\n");
+        fm24clxx_interface_debug_print("      --reg=<address>             Set the register address and it is hexadecimal.([default: 0])\n");
         fm24clxx_interface_debug_print("  -t <read>, --test=<read>        Run the driver test.\n");
         fm24clxx_interface_debug_print("      --type=<4 | 16 | 64>        Set the chip type.([default: 16])\n");
-        
+
         return 0;
     }
     else if (strcmp("i", type) == 0)
     {
         fm24clxx_info_t info;
-        
+
         /* print fm24clxx info */
         fm24clxx_info(&info);
         fm24clxx_interface_debug_print("fm24clxx: chip is %s.\n", info.chip_name);
@@ -368,7 +464,7 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         fm24clxx_interface_debug_print("fm24clxx: max current is %0.2fmA.\n", info.max_current_ma);
         fm24clxx_interface_debug_print("fm24clxx: max temperature is %0.1fC.\n", info.temperature_max);
         fm24clxx_interface_debug_print("fm24clxx: min temperature is %0.1fC.\n", info.temperature_min);
-        
+
         return 0;
     }
     else if (strcmp("p", type) == 0)
