@@ -41,6 +41,7 @@
 #include "delay.h"
 #include "uart.h"
 #include "getopt.h"
+#include <math.h>
 #include <stdlib.h>
 
 /**
@@ -72,8 +73,8 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         {"example", required_argument, NULL, 'e'},
         {"test", required_argument, NULL, 't'},
         {"addr", required_argument, NULL, 1},
-        {"addr-pin", required_argument, NULL, 2},
-        {"data", required_argument, NULL, 3},
+        {"data", required_argument, NULL, 2},
+        {"reg", required_argument, NULL, 3},
         {"type", required_argument, NULL, 4},
         {NULL, 0, NULL, 0},
     };
@@ -152,17 +153,8 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
                 break;
             }
 
-            /* addr */
-            case 1 :
-            {
-                /* set the reg addr */
-                addr = atol(optarg);
-
-                break;
-            }
-
             /* addr pin */
-            case 2 :
+            case 1 :
             {
                 /* set the addr pin */
                 if (strcmp("0", optarg) == 0)
@@ -206,25 +198,129 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
             }
 
             /* data */
+            case 2 :
+            {
+                char *p;
+                uint16_t l;
+                uint16_t i;
+                uint64_t hex_data;
+
+                /* set the data */
+                l = strlen(optarg);
+
+                /* check the header */
+                if (l >= 2)
+                {
+                    if (strncmp(optarg, "0x", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else if (strncmp(optarg, "0X", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else
+                    {
+                        p = optarg;
+                    }
+                }
+                else
+                {
+                    p = optarg;
+                }
+                
+                /* init 0 */
+                hex_data = 0;
+
+                /* loop */
+                for (i = 0; i < l; i++)
+                {
+                    if ((p[i] <= '9') && (p[i] >= '0'))
+                    {
+                        hex_data += (p[i] - '0') * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'F') && (p[i] >= 'A'))
+                    {
+                        hex_data += ((p[i] - 'A') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'f') && (p[i] >= 'a'))
+                    {
+                        hex_data += ((p[i] - 'a') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else
+                    {
+                        return 5;
+                    }
+                }
+                
+                /* set the data */
+                data = hex_data % 0xFF;
+
+                break;
+            }
+            
+            /* addr */
             case 3 :
             {
-                data = 0;
-                if ((optarg[0] <= '9') && (optarg[0] >= '0'))
+                char *p;
+                uint16_t l;
+                uint16_t i;
+                uint64_t hex_data;
+
+                /* set the data */
+                l = strlen(optarg);
+
+                /* check the header */
+                if (l >= 2)
                 {
-                    data += (optarg[0] - '0') * 16;
+                    if (strncmp(optarg, "0x", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else if (strncmp(optarg, "0X", 2) == 0)
+                    {
+                        p = optarg + 2;
+                        l -= 2;
+                    }
+                    else
+                    {
+                        p = optarg;
+                    }
                 }
                 else
                 {
-                    data += (optarg[0] - 'A' + 10) * 16;
+                    p = optarg;
                 }
-                if ((optarg[1] <= '9') && (optarg[1] >= '0'))
+                
+                /* init 0 */
+                hex_data = 0;
+
+                /* loop */
+                for (i = 0; i < l; i++)
                 {
-                    data += (optarg[1] - '0');
+                    if ((p[i] <= '9') && (p[i] >= '0'))
+                    {
+                        hex_data += (p[i] - '0') * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'F') && (p[i] >= 'A'))
+                    {
+                        hex_data += ((p[i] - 'A') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else if ((p[i] <= 'f') && (p[i] >= 'a'))
+                    {
+                        hex_data += ((p[i] - 'a') + 10) * (uint32_t)pow(16, l - i - 1);
+                    }
+                    else
+                    {
+                        return 5;
+                    }
                 }
-                else
-                {
-                    data += (optarg[1] - 'A' + 10);
-                }
+                
+                /* set the addr */
+                addr = hex_data % 0xFFFF;
 
                 break;
             }
@@ -342,22 +438,22 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         fm24clxx_interface_debug_print("  fm24clxx (-i | --information)\n");
         fm24clxx_interface_debug_print("  fm24clxx (-h | --help)\n");
         fm24clxx_interface_debug_print("  fm24clxx (-p | --port)\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("           [--addr=<address>]\n");
-        fm24clxx_interface_debug_print("  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
-        fm24clxx_interface_debug_print("           [--addr=<address>] [--data=<hex>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-t read | --test=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e read | --example=read) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--reg=<address>]\n");
+        fm24clxx_interface_debug_print("  fm24clxx (-e write | --example=write) [--type=<4 | 16 | 64>] [--addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>]\n");
+        fm24clxx_interface_debug_print("           [--reg=<address>] [--data=<hex>]\n");
         fm24clxx_interface_debug_print("\n");
         fm24clxx_interface_debug_print("Options:\n");
-        fm24clxx_interface_debug_print("     --addr=<address>             Set the register address.([default: 0])\n");
-        fm24clxx_interface_debug_print("     --addr-pin=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>\n");
+        fm24clxx_interface_debug_print("      --addr=<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>\n");
         fm24clxx_interface_debug_print("                                  Set the chip address pin.([default: 0])\n");
-        fm24clxx_interface_debug_print("     --data=<hex>                 Set the write data and it is hexadecimal.([default: random])\n");
+        fm24clxx_interface_debug_print("      --data=<hex>                Set the write data and it is hexadecimal.([default: random])\n");
         fm24clxx_interface_debug_print("  -e <read | write>, --example=<read | write>\n");
         fm24clxx_interface_debug_print("                                  Run the driver example.\n");
         fm24clxx_interface_debug_print("  -h, --help                      Show the help.\n");
         fm24clxx_interface_debug_print("  -i, --information               Show the chip information.\n");
         fm24clxx_interface_debug_print("  -p, --port                      Display the pin connections of the current board.\n");
+        fm24clxx_interface_debug_print("      --reg=<address>             Set the register address and it is hexadecimal.([default: 0])\n");
         fm24clxx_interface_debug_print("  -t <read>, --test=<read>        Run the driver test.\n");
         fm24clxx_interface_debug_print("      --type=<4 | 16 | 64>        Set the chip type.([default: 16])\n");
 
