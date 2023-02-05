@@ -78,7 +78,7 @@ uint8_t fm24clxx(uint8_t argc, char **argv)
         {"type", required_argument, NULL, 4},
         {NULL, 0, NULL, 0},
     };
-    char type[33] = "unknow";
+    char type[33] = "unknown";
     uint16_t addr = 0x0000;
     uint8_t data = rand() % 0xFF;
     fm24clxx_address_t addr_pin = FM24CLXX_ADDRESS_A000;
@@ -508,7 +508,7 @@ int main(void)
     /* uart init */
     uart_init(115200);
 
-    /* shell init && register fm24clxx fuction */
+    /* shell init && register fm24clxx function */
     shell_init();
     shell_register("fm24clxx", fm24clxx);
     uart_print("fm24clxx: welcome to libdriver fm24clxx.\n");
@@ -531,7 +531,7 @@ int main(void)
             }
             else if (res == 2)
             {
-                uart_print("fm24clxx: unknow command.\n");
+                uart_print("fm24clxx: unknown command.\n");
             }
             else if (res == 3)
             {
@@ -547,7 +547,7 @@ int main(void)
             }
             else
             {
-                uart_print("fm24clxx: unknow status code.\n");
+                uart_print("fm24clxx: unknown status code.\n");
             }
             uart_flush();
         }
