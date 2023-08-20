@@ -61,9 +61,9 @@ extern "C"{
  */
 typedef enum
 {
-    FM24CL04B = 511,          /**< FM24CL04B type */
-    FM24CL16B = 2047,         /**< FM24CL16B type */
-    FM24CL64B = 8191,         /**< FM24CL64B type */
+    FM24CL04B = 512,          /**< FM24CL04B type */
+    FM24CL16B = 2048,         /**< FM24CL16B type */
+    FM24CL64B = 8192,         /**< FM24CL64B type */
 } fm24clxx_t;
 
 /**
