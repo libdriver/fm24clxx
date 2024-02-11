@@ -1,6 +1,6 @@
 /**
  * @mainpage  LibDriver FM24CLXX
- * @brief     libdriver fm24clxx is a full function driver of fm24clxx and it can run in both MCU and Linux platform.
+ * @brief     LibDriver FM24CLXX is a full function driver of FM24CLXX and it can run in both MCU and Linux platform.
  * @version   1.0.0
  * @author    Shifeng Li
  *
