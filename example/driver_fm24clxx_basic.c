@@ -127,7 +127,7 @@ uint8_t fm24clxx_basic_read(uint16_t address, uint8_t *buf, uint16_t len)
  */
 uint8_t fm24clxx_basic_write(uint16_t address, uint8_t *buf, uint16_t len)
 {
-    /* read data */
+    /* write data */
     if (fm24clxx_write(&gs_handle, address, buf, len) != 0)
     {
         return 1;
