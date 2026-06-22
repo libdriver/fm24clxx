@@ -373,7 +373,7 @@ uint8_t fm24clxx_write(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf
     {
         handle->debug_print("fm24clxx: write out of range.\n");                                               /* write out of range */
        
-        return 1;                                                                                             /* return error */
+        return 4;                                                                                             /* return error */
     }
     page_remain = (uint8_t)(8 - address % 8);                                                                 /* set page remain */
     if (len <= page_remain)                                                                                   /* check length */
