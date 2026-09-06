@@ -255,91 +255,42 @@ uint8_t fm24clxx_get_addr_pin(fm24clxx_handle_t *handle, fm24clxx_address_t *add
  */
 uint8_t fm24clxx_read(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf, uint16_t len)
 {
-    uint8_t page_remain;
-    
-    if (handle == NULL)                                                                                      /* check handle */
+    if (handle == NULL)                                                                                  /* check handle */
     {
-        return 2;                                                                                            /* return error */
+        return 2;                                                                                        /* return error */
     }
-    if (handle->inited != 1)                                                                                 /* check handle initialization */
+    if (handle->inited != 1)                                                                             /* check handle initialization */
     {
-        return 3;                                                                                            /* return error */
+        return 3;                                                                                        /* return error */
+    }
+    if ((uint16_t)(address + len) > handle->id)                                                          /* check length */
+    {
+        handle->debug_print("fm24clxx: read out of range.\n");                                           /* read out of range */
+       
+        return 4;                                                                                        /* return error */
     }
 
-    if ((uint16_t)(address + len) > handle->id)                                                              /* check length */
+    if (handle->id > (uint16_t)FM24CL16B)                                                                /* choose id to set different address */
     {
-        handle->debug_print("fm24clxx: read out of range.\n");                                               /* read out of range */
-       
-        return 4;                                                                                            /* return error */
-    }
-    page_remain = (uint8_t)(8 - address % 8);                                                                /* get page remain */
-    if (len <= page_remain)                                                                                  /* page remain */
-    {
-        page_remain = (uint8_t)len;                                                                          /* set page remain */
-    }
-    if (handle->id > (uint16_t)FM24CL16B)                                                                    /* choose id to set different address */
-    {
-        while (1)
+        if (handle->iic_read_address16(handle->iic_addr, address, buf, len) != 0)                        /* read data */
         {
-            if (handle->iic_read_address16(handle->iic_addr, address, buf, page_remain) != 0)                /* read data */
-            {
-                handle->debug_print("fm24clxx: read failed.\n");                                             /* read failed */
-               
-                return 1;                                                                                    /* return error */
-            }
-            if (page_remain == len)                                                                          /* check break */
-            {
-                break;                                                                                       /* break loop */
-            }
-            else
-            {
-                address += page_remain;                                                                      /* address increase */
-                buf += page_remain;                                                                          /* buffer point increase */
-                len -= page_remain;                                                                          /* length decrease */
-                if (len < 8)                                                                                 /* check length */
-                {
-                    page_remain = (uint8_t)len;                                                              /* set the reset length */
-                }
-                else
-                {
-                    page_remain = 8;                                                                         /* set page */
-                }
-            }
+            handle->debug_print("fm24clxx: read failed.\n");                                             /* read failed */
+           
+            return 1;                                                                                    /* return error */
         }
     }
     else
     {
-        while (1)
+        if (handle->iic_read((uint8_t)(handle->iic_addr + ((address / 256) << 1)), address % 256,
+                              buf, len) != 0)                                                            /* read page */
         {
-            if (handle->iic_read((uint8_t)(handle->iic_addr + ((address / 256) << 1)), address % 256, buf,
-                page_remain) != 0)                                                                           /* read page */
-            {
-                handle->debug_print("fm24clxx: read failed.\n");                                             /* read failed */
-               
-                return 1;                                                                                    /* return error */
-            }
-            if (page_remain == len)                                                                          /* check break */
-            {
-                break;                                                                                       /* break loop */
-            }
-            else
-            {
-                address += page_remain;                                                                      /* address increase */
-                buf += page_remain;                                                                          /* buffer point increase */
-                len -= page_remain;                                                                          /* length decrease */
-                if (len < 8)                                                                                 /* check length */
-                {
-                    page_remain = (uint8_t)len;                                                              /* set the reset length */
-                }
-                else
-                {
-                    page_remain = 8;                                                                         /* set page */
-                }
-            }
+            handle->debug_print("fm24clxx: read failed.\n");                                             /* read failed */
+           
+            return 1;                                                                                    /* return error */
         }
     }
     
-    return 0;                                                                                                /* success return 0 */
+    return 0;                                                                                            /* success return 0 */
 }
 
 /**
@@ -358,93 +309,43 @@ uint8_t fm24clxx_read(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf,
  */
 uint8_t fm24clxx_write(fm24clxx_handle_t *handle, uint16_t address, uint8_t *buf, uint16_t len)
 {
-    uint8_t page_remain;
-    
-    if (handle == NULL)                                                                                       /* check handle */
+    if (handle == NULL)                                                                                   /* check handle */
     {
-        return 2;                                                                                             /* return error */
+        return 2;                                                                                         /* return error */
     }
-    if (handle->inited != 1)                                                                                  /* check handle initialization */
+    if (handle->inited != 1)                                                                              /* check handle initialization */
     {
-        return 3;                                                                                             /* return error */
+        return 3;                                                                                         /* return error */
+    }
+    if ((uint16_t)(address + len) > handle->id)                                                           /* check length */
+    {
+        handle->debug_print("fm24clxx: write out of range.\n");                                           /* write out of range */
+       
+        return 4;                                                                                         /* return error */
     }
 
-    if ((uint16_t)(address + len) > handle->id)                                                               /* check length */
+    if (handle->id > (uint16_t)FM24CL16B)                                                                 /* check id */
     {
-        handle->debug_print("fm24clxx: write out of range.\n");                                               /* write out of range */
-       
-        return 4;                                                                                             /* return error */
-    }
-    page_remain = (uint8_t)(8 - address % 8);                                                                 /* set page remain */
-    if (len <= page_remain)                                                                                   /* check length */
-    {
-        page_remain = (uint8_t)len;                                                                           /* set page remain */
-    }
-    if (handle->id > (uint16_t)FM24CL16B)                                                                     /* check id */
-    {
-        while (1)
+        if (handle->iic_write_address16(handle->iic_addr, address, buf, len) != 0)                        /* write data */
         {
-            if (handle->iic_write_address16(handle->iic_addr, address, buf, page_remain) != 0)                /* write data */
-            {
-                handle->debug_print("fm24clxx: write failed.\n");                                             /* write failed */
-               
-                return 1;                                                                                     /* return error */
-            }
-            if (page_remain == len)                                                                           /* check break */
-            {
-                break;                                                                                        /* break */
-            }
-            else
-            {
-                address += page_remain;                                                                       /* address increase */
-                buf += page_remain;                                                                           /* buffer point increase */
-                len -= page_remain;                                                                           /* length decrease */
-                if (len < 8)                                                                                  /* check length */
-                {
-                    page_remain = (uint8_t)len;                                                               /* set the reset length */
-                }
-                else
-                {
-                    page_remain = 8;                                                                          /* set page */
-                }
-            }
+            handle->debug_print("fm24clxx: write failed.\n");                                             /* write failed */
+           
+            return 1;                                                                                     /* return error */
         }
     }        
     else
     {
-        while (1)
+        if (handle->iic_write((uint8_t)(handle->iic_addr + ((address / 256) << 1)), address % 256,
+                               buf, len) != 0)                                                            /* write page */
         {
-            if (handle->iic_write((uint8_t)(handle->iic_addr + ((address / 256) << 1)), address % 256, buf,
-                page_remain) != 0)                                                                            /* write page */
-            {
-                handle->debug_print("fm24clxx: write failed.\n");                                             /* write failed */
-               
-                return 1;                                                                                     /* return error */
-            }
-            if (page_remain == len)                                                                           /* check break */
-            {
-                break;                                                                                        /* break */
-            }
-            else
-            {
-                address += page_remain;                                                                       /* address increase */
-                buf += page_remain;                                                                           /* buffer point increase */
-                len -= page_remain;                                                                           /* length decrease */
-                if (len < 8)                                                                                  /* check length */
-                {
-                    page_remain = (uint8_t)len;                                                               /* set the rest length */
-                }
-                else
-                {
-                    page_remain = 8;                                                                          /* set page */
-                }
-            }
+            handle->debug_print("fm24clxx: write failed.\n");                                             /* write failed */
+           
+            return 1;                                                                                     /* return error */
         }
     }
     
-    return 0;                                                                                                 /* success return 0 */
+    return 0;                                                                                             /* success return 0 */
 }
-
 
 /**
  * @brief      get chip's information
